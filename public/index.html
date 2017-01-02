@@ -18,36 +18,42 @@
       </div>
       <div>
         <textarea name="schema" id="schema" cols="80" rows="20">
-type User {
-  id: ID
-  name: String
-  emails: [String]
-  pets: [Pet]
-  admin: Boolean
-  type: UserType
-  trustScore: Float
-}
 type Query {
   currentUser: User
   users: [User]
   userCount: Int
 }
+
+type User {
+  id: ID
+  name: String
+  hobbies: [String]
+  pets: [Pet]
+  isSmiling: Boolean
+  type: UserType
+  trustScore: Float
+}
+
 enum UserType {
   ADMIN
   MODERATOR
   MEMBER
 }
+
 interface Pet {
   name: String
 }
+
 type Cat implements Pet {
   name: String
   currentlyPurring: Boolean
 }
+
 type Dog implements Pet {
   name: String
   currentlyFetching: Boolean
 }
+
 schema {
   query: Query
 }
