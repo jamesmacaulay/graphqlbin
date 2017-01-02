@@ -1,10 +1,16 @@
 {
-  "name": "graphqlb.in",
+  "name": "graphqlbin",
   "version": "0.0.1",
   "description": "Mock GraphQL schema server",
+  "engines": {
+    "node": "7.3.0",
+    "npm": "3.10.10"
+  },
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "tsc -p ."
   },
   "author": "James MacAulay",
   "license": "ISC",
@@ -14,9 +20,7 @@
     "@types/graphql": "^0.8.5",
     "express": "^4.14.0",
     "express-graphql": "^0.6.1",
-    "graphql": "^0.8.2"
-  },
-  "devDependencies": {
+    "graphql": "^0.8.2",
     "typescript": "^2.1.4"
   }
 }

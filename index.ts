@@ -7,6 +7,7 @@ import {
   GraphQLString
 } from 'graphql';
 
+const port = process.env.PORT || 3000;
 const app = express();
 
 function fetchSchema(schemaId) {
@@ -35,4 +36,4 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.listen(3000);
+app.listen(port);
