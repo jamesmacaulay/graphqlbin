@@ -1,9 +1,21 @@
 <html>
   <head>
-    <title>graphqlbin</title>
+    <title>GraphQL Bin</title>
+    <style>
+      body {
+        padding: 10px;
+      }
+      div {
+        margin-top: 20px;
+      }
+    </style>
   </head>
   <body>
+    <h1>GraphQL Bin</h1>
     <form action="/schemas" method="POST">
+      <div>
+        <label for="schema">Put a <a href="http://graphql.org/learn/schema/" target="none">GraphQL Schema</a> in here:</label>
+      </div>
       <div>
         <textarea name="schema" id="schema" cols="80" rows="20">
 type User {
@@ -42,8 +54,11 @@ schema {
         </textarea>
       </div>
       <div>
-        <input type="submit">
+        <input type="submit" value="Make it work!">
       </div>
     </form>
+    <div>
+      <a href="https://github.com/jamesmacaulay/graphqlbin">Code on GitHub</a>.
+    </div>
   </body>
 </html>
