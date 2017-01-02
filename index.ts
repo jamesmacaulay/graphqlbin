@@ -11,7 +11,9 @@ const app = express();
 
 app.use(express.static('public'));
 
-app.use('/schemas/:schemaId/graphql', (req: express.Request, res: express.Response) => {
+app.all('/schemas/:schemaId/graphql', (req: express.Request, res: express.Response) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   blobStore.fetch(req.params.schemaId).then((blob) => {
     if (blob) {
       const schema = buildDummySchema(blob);
