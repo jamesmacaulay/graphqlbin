@@ -2,12 +2,14 @@ import {
   graphql,
   buildSchema,
   isCompositeType,
+  isAbstractType,
   getNamedType,
   GraphQLSchema,
   GraphQLObjectType,
   GraphQLString,
   GraphQLResolveInfo,
   GraphQLScalarType,
+  GraphQLEnumType,
   GraphQLOutputType,
   GraphQLField,
   GraphQLList
@@ -17,7 +19,9 @@ const dummySchema = buildSchema(`
 type User {
   name: String
   emails: [String]
+  pets: [Pet]
   admin: Boolean
+  type: UserType
   trustScore: Float
 }
 type Query {
@@ -25,6 +29,22 @@ type Query {
   currentUser: User
   users: [User]
   userCount: Int
+}
+enum UserType {
+  ADMIN
+  MODERATOR
+  MEMBER
+}
+interface Pet {
+  name: String
+}
+type Cat implements Pet {
+  name: String
+  currentlyPurring: Boolean
+}
+type Dog implements Pet {
+  name: String
+  currentlyFetching: Boolean
 }
 schema {
   query: Query
@@ -34,10 +54,10 @@ schema {
 const typeMap = dummySchema.getTypeMap();
 
 const scalarGenerators = {
-  Int: () => 0,
-  Float: () => 0.0,
+  Int: () => 1,
+  Float: () => 0.5,
   String: () => 'string',
-  Boolean: () => false,
+  Boolean: () => true,
   ID: () => 'id'
 }
 
@@ -47,6 +67,10 @@ function customScalarGenerator(type) {
 
 function arbitraryScalar(type: GraphQLScalarType) {
   return (scalarGenerators[type.name] || customScalarGenerator(type))();
+}
+
+function arbitraryEnum(type: GraphQLEnumType) {
+  return type.getValues()[0].value;
 }
 
 function arbitraryList(type: GraphQLList<GraphQLOutputType>) {
@@ -60,6 +84,10 @@ function generatorForType(type: GraphQLOutputType) {
     return () => ({});
   } else if (type instanceof GraphQLList) {
     return () => arbitraryList(type);
+  } else if (type instanceof GraphQLEnumType) {
+    return () => arbitraryEnum(type);
+  } else {
+    return () => ({});
   }
 }
 
@@ -76,6 +104,8 @@ Object.keys(typeMap).forEach((typeName) => {
         const field = fieldMap[fieldName];
         field.resolve = resolverForField(field);
       });
+    } else if (isAbstractType(type)) {
+      type.resolveType = () => dummySchema.getPossibleTypes(type)[0];
     }
   }
 });
