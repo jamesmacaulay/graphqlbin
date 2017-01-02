@@ -19,6 +19,7 @@
       <div>
         <textarea name="schema" id="schema" cols="80" rows="20">
 type User {
+  id: ID
   name: String
   emails: [String]
   pets: [Pet]
@@ -27,7 +28,6 @@ type User {
   trustScore: Float
 }
 type Query {
-  schemaId: ID
   currentUser: User
   users: [User]
   userCount: Int
