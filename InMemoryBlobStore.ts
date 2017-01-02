@@ -12,7 +12,7 @@ export class InMemoryBlobStore {
   }
 
   add(blob: string): Promise<string> {
-    const digest = createHash('sha256').update(blob).digest('hex');
+    const digest = createHash('sha256').update(blob).digest('hex').substr(0, 16);
     this._storage[digest] = blob;
     this._keys.push(digest);
     if (this._keys.length > maxBlobs) {

@@ -1,50 +1,15 @@
 import * as express from 'express';
 import * as graphQLHTTP from 'express-graphql';
-import { GraphQLSchema } from 'graphql';
+import { urlencoded } from 'body-parser';
+import { GraphQLSchema, buildSchema, printSchema } from 'graphql';
 import { InMemoryBlobStore } from './InMemoryBlobStore';
 import { buildDummySchema } from './buildDummySchema';
 
 const blobStore = new InMemoryBlobStore();
-blobStore.add(`
-type User {
-  name: String
-  emails: [String]
-  pets: [Pet]
-  admin: Boolean
-  type: UserType
-  trustScore: Float
-}
-type Query {
-  schemaId: ID
-  currentUser: User
-  users: [User]
-  userCount: Int
-}
-enum UserType {
-  ADMIN
-  MODERATOR
-  MEMBER
-}
-interface Pet {
-  name: String
-}
-type Cat implements Pet {
-  name: String
-  currentlyPurring: Boolean
-}
-type Dog implements Pet {
-  name: String
-  currentlyFetching: Boolean
-}
-schema {
-  query: Query
-}
-`).then((digest) => {
-  console.log(digest);
-});
-
 const port = process.env.PORT || 3000;
 const app = express();
+
+app.use(express.static('public'));
 
 app.use('/schemas/:schemaId/graphql', (req: express.Request, res: express.Response) => {
   blobStore.fetch(req.params.schemaId).then((blob) => {
@@ -57,8 +22,14 @@ app.use('/schemas/:schemaId/graphql', (req: express.Request, res: express.Respon
   });
 });
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.use('/schemas', urlencoded({extended: true}));
+app.post('/schemas', (req, res) => {
+  const blob = req.body.schema;
+  const schema = buildSchema(blob);
+  const normalizedSchema = printSchema(schema);
+  blobStore.add(normalizedSchema).then((digest) => {
+    res.redirect(`/schemas/${digest}/graphql`);
+  });
 });
 
 app.listen(port);

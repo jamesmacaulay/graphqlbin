@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <title>graphqlbin</title>
+  </head>
+  <body>
+    <form action="/schemas" method="POST">
+      <div>
+        <textarea name="schema" id="schema" cols="80" rows="20">
+type User {
+  name: String
+  emails: [String]
+  pets: [Pet]
+  admin: Boolean
+  type: UserType
+  trustScore: Float
+}
+type Query {
+  schemaId: ID
+  currentUser: User
+  users: [User]
+  userCount: Int
+}
+enum UserType {
+  ADMIN
+  MODERATOR
+  MEMBER
+}
+interface Pet {
+  name: String
+}
+type Cat implements Pet {
+  name: String
+  currentlyPurring: Boolean
+}
+type Dog implements Pet {
+  name: String
+  currentlyFetching: Boolean
+}
+schema {
+  query: Query
+}
+        </textarea>
+      </div>
+      <div>
+        <input type="submit">
+      </div>
+    </form>
+  </body>
+</html>
