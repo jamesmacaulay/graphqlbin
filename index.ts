@@ -14,14 +14,18 @@ app.use(express.static('public'));
 app.all('/schemas/:schemaId/graphql', (req: express.Request, res: express.Response) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  blobStore.fetch(req.params.schemaId).then((blob) => {
-    if (blob) {
-      const schema = buildDummySchema(blob);
-      graphQLHTTP({schema: schema, graphiql: true})(req, res);
-    } else {
-      res.sendStatus(404);
-    }
-  });
+  if ('OPTIONS' == req.method) {
+    res.send(200);
+  } else {
+    blobStore.fetch(req.params.schemaId).then((blob) => {
+      if (blob) {
+        const schema = buildDummySchema(blob);
+        graphQLHTTP({schema: schema, graphiql: true})(req, res);
+      } else {
+        res.send(404);
+      }
+    });
+  }
 });
 
 app.use('/schemas', urlencoded({extended: true}));
