@@ -24,11 +24,12 @@ const scalarGenerators = {
 }
 
 function customScalarGenerator(type) {
-  return type.name;
+  return () => type.name;
 }
 
 function arbitraryScalar(type: GraphQLScalarType) {
-  return (scalarGenerators[type.name] || customScalarGenerator(type))();
+  const generate = scalarGenerators[type.name] || customScalarGenerator(type)
+  return generate();
 }
 
 function arbitraryEnum(type: GraphQLEnumType) {
