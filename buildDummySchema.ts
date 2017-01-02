@@ -15,44 +15,6 @@ import {
   GraphQLList
 } from 'graphql';
 
-const dummySchema = buildSchema(`
-type User {
-  name: String
-  emails: [String]
-  pets: [Pet]
-  admin: Boolean
-  type: UserType
-  trustScore: Float
-}
-type Query {
-  schemaId: ID
-  currentUser: User
-  users: [User]
-  userCount: Int
-}
-enum UserType {
-  ADMIN
-  MODERATOR
-  MEMBER
-}
-interface Pet {
-  name: String
-}
-type Cat implements Pet {
-  name: String
-  currentlyPurring: Boolean
-}
-type Dog implements Pet {
-  name: String
-  currentlyFetching: Boolean
-}
-schema {
-  query: Query
-}
-`);
-
-const typeMap = dummySchema.getTypeMap();
-
 const scalarGenerators = {
   Int: () => 1,
   Float: () => 0.5,
@@ -95,21 +57,26 @@ function resolverForField<TSource, TContext>(field: GraphQLField<TSource, TConte
   return generatorForType(field.type);
 }
 
-Object.keys(typeMap).forEach((typeName) => {
-  if (!typeName.startsWith('__')) {
-    const type = typeMap[typeName];
-    if (type instanceof GraphQLObjectType) {
-      const fieldMap = typeMap[typeName].getFields();
-      Object.keys(fieldMap).forEach((fieldName) => {
-        const field = fieldMap[fieldName];
-        field.resolve = resolverForField(field);
-      });
-    } else if (isAbstractType(type)) {
-      type.resolveType = () => dummySchema.getPossibleTypes(type)[0];
-    }
+function addResolvers(schema, type) {
+  if (type.name.startsWith('__')) {
+    return;
   }
-});
+  if (type instanceof GraphQLObjectType) {
+    const fieldMap = type.getFields();
+    Object.keys(fieldMap).forEach((fieldName) => {
+      const field = fieldMap[fieldName];
+      field.resolve = resolverForField(field);
+    });
+  } else if (isAbstractType(type)) {
+    type.resolveType = () => schema.getPossibleTypes(type)[0];
+  }
+}
 
-export function fetchSchema(schemaId: String) {
-  return Promise.resolve(dummySchema);
+export function buildDummySchema(schemaString: string): GraphQLSchema {
+  const schema = buildSchema(schemaString);
+  const typeMap = schema.getTypeMap();
+  Object.keys(typeMap).forEach((typeName) => {
+    addResolvers(schema, typeMap[typeName]);
+  });
+  return schema;
 }
