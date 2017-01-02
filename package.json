@@ -1,0 +1,22 @@
+{
+  "name": "graphqlb.in",
+  "version": "0.0.1",
+  "description": "Mock GraphQL schema server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "James MacAulay",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.0.34",
+    "@types/express-graphql": "0.0.33",
+    "@types/graphql": "^0.8.5",
+    "express": "^4.14.0",
+    "express-graphql": "^0.6.1",
+    "graphql": "^0.8.2"
+  },
+  "devDependencies": {
+    "typescript": "^2.1.4"
+  }
+}
