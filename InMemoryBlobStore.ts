@@ -16,8 +16,8 @@ export class InMemoryBlobStore {
     this._storage[digest] = blob;
     this._keys.push(digest);
     if (this._keys.length > maxBlobs) {
-      this._keys.shift();
-      delete this._storage[digest];
+      const evicted = this._keys.shift();
+      delete this._storage[evicted];
     }
     return Promise.resolve(digest);
   }
